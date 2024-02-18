@@ -87,7 +87,7 @@ echo "$disk -a -o on -S on -s (S/../.././02|L/../../6/03)" > /mnt/etc/smartd.con
 echo "Done"
 
 echo "Copying install data to run under chroot..."
-cp -r /root/arch-plasma /mnt/root/arch-plasma
+cp -r /root/arch-plasma /mnt/root/
 echo "Done"
 
 echo "Invoking install script to be run under chroot..."

@@ -46,7 +46,7 @@ flatpak
 nftables
 networkmanager
 bluez
-bluez-util
+bluez-utils
 avahi
 openssh
 sshfs
@@ -101,6 +101,8 @@ adobe-source-code-pro-fonts
 
 # Virtual machine
 qemu-full
-libvirt virt-install
-edk2-ovmf virt-manager
+libvirt
+virt-install
+edk2-ovmf
+virt-manager
 virt-viewer
