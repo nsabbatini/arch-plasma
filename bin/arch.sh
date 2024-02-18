@@ -5,7 +5,7 @@ echo "Running install script"
 echo "######################"
 echo ""
 
-bin_dir="/root/router/bin"
+bin_dir="/root/arch-plasma/bin"
 param="$bin_dir/parameters.sh"
 pkgs="$bin_dir/pkg_list.txt"
 
@@ -13,7 +13,7 @@ pkgs="$bin_dir/pkg_list.txt"
 echo "Checking config parameters..."
 source $param
 
-[[ $disk =~ .*sda|.*nvme0n1 ]] || { echo "Error: disk must be sda or nvme0n1"; exit 1; }
+[[ $disk =~ .*sda|.*nvme0n1|.*vda ]] || { echo "Error: disk must be sda, nvme0n1 or vda"; exit 1; }
 [[ -z "$host" ]] && { echo "Error: variable host undefined"; exit 1; }
 echo "Done"
 
@@ -27,10 +27,14 @@ if [[ $disk == "/dev/sda" ]]; then
     partition1="/dev/sda1"
     partition2="/dev/sda2"
     partition3="/dev/sda3"
-else
+elif [[ $disk == "/dev/nvme0n1" ]]; then
     partition1="/dev/nvme0n1p1"
     partition2="/dev/nvme0n1p2"
     partition3="/dev/nvme0n1p3"
+else
+    partition1="/dev/vda1"
+    partition2="/dev/vda2"
+    partition3="/dev/vda3"
 fi
 
 parted --script $disk -- \

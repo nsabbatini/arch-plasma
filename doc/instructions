@@ -4,11 +4,19 @@
 #   4. attach usb with Arch Linux install media and boot from it
 # #######################################################################################
 
+# If the fonts are too small
+setfont iso01-12x22.psfu.gz
+
+# If kayboard layout is not 'us'
 localectl list-keymaps | grep br
 loadkeys br-latin1-us
 
+# Make sure keyring is updated
+pacman -Sy archlinux-keyring
+
 # Clone install files from github
-git clone https://github.com/nsabbatini/arch-install.git
+pacman -S git
+git clone https://github.com/nsabbatini/arch-plasma.git
 
 # Configure install parameters in file /root/router/bin/parameters.sh and run install script
 /root/arch-install/bin/arch.sh | tee /root/arch.log
