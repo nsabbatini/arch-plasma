@@ -19,7 +19,7 @@ pacman -S git
 git clone https://github.com/nsabbatini/arch-plasma.git
 
 # Configure install parameters in file /root/router/bin/parameters.sh and run install script
-/root/arch-install/bin/arch.sh | tee /root/arch.log
+/root/arch-plasma/bin/arch.sh | tee /root/arch.log
 
 # Save install log to SSD
 cp /root/arch.log /mnt/root/

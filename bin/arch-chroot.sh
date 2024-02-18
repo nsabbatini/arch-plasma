@@ -6,9 +6,9 @@ echo "############################"
 echo ""
 
 # Before running this script, adjust parameters in file "parameters.sh"
-source /root/router/bin/parameters.sh
+source /root/arch-plasma/bin/parameters.sh
 
-[[ $disk =~ .*sda|.*nvme0n1 ]] || { echo "Error: disk must be sda or nvme0n1"; exit 1; }
+[[ $disk =~ .*sda|.*nvme0n1|.*vda ]] || { echo "Error: disk must be sda, nvme0n1 or vda"; exit 1; }
 
 echo "Configuring locale..."
 ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
@@ -25,7 +25,11 @@ default arch.conf
 EOF
 
 # Save <part-uuid> of the ssid into a variable
-root_partuuid=$(blkid -s PARTUUID -o value ${disk}p3)
+if [[ $disk == "/dev/nvme0n1" ]]; then
+   root_partuuid=$(blkid -s PARTUUID -o value ${disk}p3)
+else
+   root_partuuid=$(blkid -s PARTUUID -o value ${disk}3)
+fi
 
 # Configure Arch Linux boot
 cat << EOF > /boot/loader/entries/arch.conf

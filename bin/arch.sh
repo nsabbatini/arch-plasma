@@ -56,10 +56,6 @@ mkdir /mnt/boot
 mount $partition1 /mnt/boot/
 echo "Formatting and mounting done"
 
-# Make sure keyring is up-to-date
-pacman-key --init
-pacman -Sy archlinux-keyring
-
 echo "Downloading packages..."
 cat $pkgs | sed -E '/^#/d' | sed -E '/^\s*$/d' |  pacstrap -i /mnt -
 echo "Download done"
@@ -69,7 +65,7 @@ genfstab -U -p /mnt >> /mnt/etc/fstab
 echo "Done"
 
 echo "Copying configuration files..."
-rsync -v -r /root/arch-install/etc/ /mnt/etc/
+rsync -v -r /root/arch-plasma/etc/ /mnt/etc/
 echo "Done"
 
 echo "Configuring hostname, language, keymap..."
@@ -91,11 +87,11 @@ echo "$disk -a -o on -S on -s (S/../.././02|L/../../6/03)" > /mnt/etc/smartd.con
 echo "Done"
 
 echo "Copying install data to run under chroot..."
-cp -r /root/arch-install /mnt/root/arch-install
+cp -r /root/arch-plasma /mnt/root/arch-plasma
 echo "Done"
 
 echo "Invoking install script to be run under chroot..."
-arch-chroot /mnt bash -c "/root/arch-install/bin/arch-chroot.sh | tee /root/arch-chroot.log"
+arch-chroot /mnt bash -c "/root/arch-plasma/bin/arch-chroot.sh | tee /root/arch-chroot.log"
 echo "Done"
 
 echo ""
