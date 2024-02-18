@@ -1,0 +1,106 @@
+# #######################################################################################
+# Basic preparations to install on laptop
+#   3. connect ethernet cable using an usb ethernet adaptor
+#   4. attach usb with Arch Linux install media and boot from it
+# #######################################################################################
+
+localectl list-keymaps | grep br
+loadkeys br-latin1-us
+
+# Clone install files from github
+git clone https://github.com/nsabbatini/arch-install.git
+
+# Configure install parameters in file /root/router/bin/parameters.sh and run install script
+/root/arch-install/bin/arch.sh | tee /root/arch.log
+
+# Save install log to SSD
+cp /root/arch.log /mnt/root/
+
+# Remove install media and power-off
+umount -a
+poweroff
+
+# Power-on, login as normal user and install yay
+mkdir /home/$USER/aur; cd /home/$USER/aur
+git clone https://aur.archlinux.org/yay.git
+cd yay; makepkg -si
+
+# Install AUR software
+yay -S google-chrome warsaw-bin etcher-bin
+sudo systemctl enable warsaw
+# Open web browser, go to https://www.dieboldnixdorf.com.br/warsaw and configure
+
+# Install printter and scanner drivers; configure printer at http://127.0.0.1:631
+yay -S brother-dcp-b7520dw brscan4
+sudo brsaneconfig4 -a name=brscanner model=Brother_DCP_B7520DW ip=192.168.1.244
+brsaneconfig4 -q
+
+# ###########################################################################
+# Retrive ssh keys from backup or generate new ones and copy to other servers
+# ###########################################################################
+
+#ssh-keygen -t rsa
+#ssh-copy-id narcizo@<server>
+
+# ##########################
+# Mount sshfs disk on castor
+# ##########################
+
+# If not installed yet, install ssh server in castor, following this link:
+# https://medium.com/rkttu/set-up-your-ssh-server-in-windows-10-native-way-1aab9021c3a6
+scp /home/narcizo/.ssh/id_rsa.pub narcizo@castor:/C:/Users/Narcizo/.ssh
+# In castor, open powershell with admin elevation:
+   cd C:\Users\Narcizo\.ssh
+   rename id_rsa.pub authorized_keys
+   $authorizedKeyFilePath = "C:\Users\Narcizo\.ssh\authorized_keys"
+   icacls.exe $authorizedKeyFilePath /remove “NT AUTHORITY\Authenticated Users”
+   icacls.exe $authorizedKeyFilePath /inheritance:r
+   Get-Acl “$env:ProgramData\ssh\ssh_host_dsa_key” | Set-Acl $authorizedKeyFilePath
+mkdir /home/narcizo/castor
+vim /home/narcizo/.profile
+   # Mount sshfs disk on castor
+   REMOTE="narci@192.168.1.42:/G:/Users/Narcizo/"
+   LOCAL="/home/narcizo/castor"
+   MOUNTED=$( /usr/bin/mount | grep -E "^${REMOTE}" | /usr/bin/awk '{print $3}' )
+
+   if [ -z "$MOUNTED" ] ; then
+      /usr/bin/sshfs $REMOTE $LOCAL -o uid=1000,gid=1000,reconnect,ServerAliveInterval=15,ServerAliveCountMax=3
+   fi
+
+# Create a bridge br0 with STP disabled (to avoid the bridge being advertised on the network)
+# This bridge is necessary to have bridge network connections in virt/qemu/kvm VMs
+nmcli connection add type bridge ifname br0 stp no
+
+# Make slave ethernet connections to the bridge.
+# Lines below are for the two USB-to-ethernet adapters that I have.
+nmcli connection add type bridge-slave ifname enp0s20f0u1 master br0
+nmcli connection add type bridge-slave ifname enp0s20f0u6u3 master br0
+
+# Find out the connection name
+nmcli connection show --active
+
+# Bring the existing connection down. In the command line below,
+# the connection name obtained above is 'Wired connection 3'
+nmcli connection down 'Wired connection 3'
+
+# Bring the new bridge up
+nmcli connection up bridge-br0
+nmcli connection up bridge-slave-enp0s20f0u1
+
+###################################################
+# The following is to make applications use wayland
+###################################################
+
+# For Chrome and chromium based browsers
+# 1. Go to chrome://flags
+# 2. Search for "Preferred Ozone platform"
+# 3. Set it to "auto"
+
+# For electron apps:
+echo "" >> /etc/profile
+echo "# Make electron apps use wayland" >> /etc/profile
+echo "export ELECTRON_OZONE_PLATFORM_HINT=auto" >> /etc/profile
+
+# Reboot to apply groups and activate daemon
+sudo reboot
+

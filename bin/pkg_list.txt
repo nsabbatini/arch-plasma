@@ -1,0 +1,106 @@
+# Basic packages
+base
+base-devel
+linux
+linux-firmware
+linux-headers
+intel-ucode
+efibootmgr
+
+# Shell
+bash-completion
+man-db
+man-pages
+dialog
+tmux
+
+# System maintenance
+logrotate
+usbutils
+fwupd
+util-linux
+lm_sensors
+smartmontools
+
+# Dev tools
+vim
+git
+rsync
+curl
+wget
+htop
+neofetch
+
+# Filesystem utils
+mtools
+dosfstools
+duf
+tree
+
+# Package manager
+reflector
+rebuild-detector
+flatpak
+
+# Network
+nftables
+networkmanager
+bluez
+bluez-util
+avahi
+openssh
+sshfs
+fuse3
+inetutils
+ldns
+dnsutils
+tcpdump
+ethtool
+net-tools
+cloudflared
+
+# Printer
+cups
+cups-pdf
+
+# Power management
+power-profiles-daemon
+
+# Audio
+pipewire
+pipewire-alsa
+pipewire-jack
+pipewire-pulse
+wireplumber
+
+# Graphics
+mesa
+intel-media-driver
+intel-gpu-tools
+vulkan-intel
+vulkan-tools
+
+# Desktop
+plasma-meta
+sddm
+
+# Desktop software
+firefox
+libreoffice-fresh
+bitwarden
+
+# Fonts
+noto-fonts
+noto-fonts-cjk
+noto-fonts-emoji
+noto-fonts-extra
+ttf-roboto
+ttf-roboto-mono
+adobe-source-sans-fonts
+adobe-source-code-pro-fonts
+
+# Virtual machine
+qemu-full
+libvirt virt-install
+edk2-ovmf virt-manager
+virt-viewer
