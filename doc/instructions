@@ -11,6 +11,10 @@ setfont iso01-12x22.psfu.gz
 localectl list-keymaps | grep br
 loadkeys br-latin1-us
 
+# Set location and time zone
+timedatectl set-ntp true
+timedatectl set-timezone America/Sao_Paulo 
+
 # Make sure keyring is updated
 pacman -Sy archlinux-keyring
 
@@ -19,10 +23,11 @@ pacman -S git
 git clone https://github.com/nsabbatini/arch-plasma.git
 
 # Configure install parameters in file /root/router/bin/parameters.sh and run install script
-/root/arch-plasma/bin/arch.sh | tee /root/arch.log
+#/root/arch-plasma/bin/arch.sh | tee /root/arch.log
+/root/arch-plasma/bin/arch.sh > >(tee -a /root/arch.stdout.log) 2> >(tee -a /root/arch.stderr.log >&2)
 
 # Save install log to SSD
-cp /root/arch.log /mnt/root/
+cp /root/*.log /mnt/root/
 
 # Remove install media and power-off
 umount -a

@@ -17,11 +17,6 @@ source $param
 [[ -z "$host" ]] && { echo "Error: variable host undefined"; exit 1; }
 echo "Done"
 
-echo "Setting locale..."
-timedatectl set-ntp true
-timedatectl set-timezone America/Sao_Paulo
-echo "Done"
-
 echo "Creating partitions on $disk..."
 if [[ $disk == "/dev/sda" ]]; then
     partition1="/dev/sda1"
@@ -91,7 +86,7 @@ cp -r /root/arch-plasma /mnt/root/
 echo "Done"
 
 echo "Invoking install script to be run under chroot..."
-arch-chroot /mnt bash -c "/root/arch-plasma/bin/arch-chroot.sh | tee /root/arch-chroot.log"
+arch-chroot /mnt bash -c "/root/arch-plasma/bin/arch-chroot.sh > >(tee -a /root/arch-chroot.stdout.log) 2> >(tee -a /root/arch-chroot.stderr.log >&2)"
 echo "Done"
 
 echo ""

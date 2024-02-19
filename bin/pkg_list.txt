@@ -12,7 +12,6 @@ bash-completion
 man-db
 man-pages
 dialog
-tmux
 
 # System maintenance
 logrotate
