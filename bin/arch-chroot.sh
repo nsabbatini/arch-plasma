@@ -71,7 +71,7 @@ systemctl enable avahi-daemon
 systemctl enable bluetooth
 systemctl enable smartd
 systemctl enable sddm
-systemctl enable virtlibd
+systemctl enable libvirtd
 systemctl enable power-profiles-daemon
 echo "Enabling services done"
 

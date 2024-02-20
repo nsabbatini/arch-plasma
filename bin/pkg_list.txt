@@ -79,14 +79,32 @@ intel-gpu-tools
 vulkan-intel
 vulkan-tools
 
-# Desktop
+# KDE Plasma desktop
 plasma-meta
 sddm
+
+# Following list is from kde-applications-meta
+#kde-accessibility-meta
+#kde-education-meta
+#kde-games-meta
+kde-graphics-meta
+kde-multimedia-meta
+kde-network-meta
+kde-office-meta
+kde-pim-meta
+kde-sdk-meta
+kde-system-meta
+kde-utilities-meta
+#kdevelop-meta
 
 # Desktop software
 firefox
 libreoffice-fresh
 bitwarden
+vlc
+phonon-qt6-vlc
+mpv
+haruna
 
 # Fonts
 noto-fonts

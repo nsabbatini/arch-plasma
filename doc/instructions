@@ -48,10 +48,14 @@ yay -S brother-dcp-b7520dw brscan4
 sudo brsaneconfig4 -a name=brscanner model=Brother_DCP_B7520DW ip=192.168.1.244
 brsaneconfig4 -q
 
-# ###########################################################################
-# Retrive ssh keys from backup or generate new ones and copy to other servers
-# ###########################################################################
+# ############################
+# Retrive ssh keys from backup
+# ############################
+scp -r narcizo@ganso:/media/ssd/lince.localdomain/daily.0/narcizo/.ssh /home/narcizo/
 
+# ##############################################
+# Or generate new ones and copy to other servers
+# ##############################################
 #ssh-keygen -t rsa
 #ssh-copy-id narcizo@<server>
 
