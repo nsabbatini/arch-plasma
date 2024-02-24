@@ -22,8 +22,8 @@ pacman -Sy archlinux-keyring
 pacman -S git
 git clone https://github.com/nsabbatini/arch-plasma.git
 
+######### DON'T FORGET TO MODIFY THE PARAMETERS.SH FILE ##########
 # Configure install parameters in file /root/router/bin/parameters.sh and run install script
-#/root/arch-plasma/bin/arch.sh | tee /root/arch.log
 /root/arch-plasma/bin/arch.sh > >(tee -a /root/arch.stdout.log) 2> >(tee -a /root/arch.stderr.log >&2)
 
 # Save install log to SSD
