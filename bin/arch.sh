@@ -35,8 +35,8 @@ fi
 parted --script $disk -- \
     mklabel gpt \
     mkpart EFI-Boot fat32 2048s 1050623s \
-    mkpart Swap linux-swap 1050624s 5244927s \
-    mkpart root ext4 5244928s 100% \
+    mkpart swap linux-swap 1050624s 9439231s \
+    mkpart root ext4 9439232s 100% \
     set 1 esp on
 echo "Partitions done"
 

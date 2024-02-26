@@ -11,6 +11,11 @@ setfont iso01-12x22.psfu.gz
 localectl list-keymaps | grep br
 loadkeys br-latin1-us
 
+# If not connected with ethernet, connect to wifi
+iwd device list
+iwd station <device> get-networks
+iwd station <device> connect <network>
+
 # Set location and time zone
 timedatectl set-ntp true
 timedatectl set-timezone America/Sao_Paulo 
