@@ -107,6 +107,7 @@ mpv
 haruna
 
 # Fonts
+cantarell-fonts
 noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
