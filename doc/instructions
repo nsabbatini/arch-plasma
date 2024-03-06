@@ -38,13 +38,20 @@ cp /root/*.log /mnt/root/
 umount -a
 poweroff
 
-# Power-on, login as normal user and install yay
+# ###################################################
+# Power-on, login as normal user, then retrive backup
+# ###################################################
+mkdir /home/narcizo/backup
+scp -r narcizo@ganso:/media/ssd/lince.localdomain/daily.0/narcizo/ /home/narcizo/backup/
+# Choose files and copy from the backup folder, DO NOT FORGET THE SSH KEYS
+
+# Install yay
 mkdir /home/$USER/aur; cd /home/$USER/aur
 git clone https://aur.archlinux.org/yay.git
 cd yay; makepkg -si
 
 # Install AUR software
-yay -S google-chrome warsaw-bin etcher-bin
+yay -S google-chrome warsaw-bin etcher-bin otf-ibm-plex
 sudo systemctl enable warsaw
 # Open web browser, go to https://www.dieboldnixdorf.com.br/warsaw and configure
 
@@ -52,11 +59,6 @@ sudo systemctl enable warsaw
 yay -S brother-dcp-b7520dw brscan4
 sudo brsaneconfig4 -a name=brscanner model=Brother_DCP_B7520DW ip=192.168.1.244
 brsaneconfig4 -q
-
-# ############################
-# Retrive ssh keys from backup
-# ############################
-scp -r narcizo@ganso:/media/ssd/lince.localdomain/daily.0/narcizo/.ssh /home/narcizo/
 
 # ##############################################
 # Or generate new ones and copy to other servers
