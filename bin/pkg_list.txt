@@ -115,11 +115,7 @@ noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
 noto-fonts-extra
-otf-atkinson-hyperlegible
-ttf-firacode-nerd
 #ttf-ibm-plex
-ttf-roboto
-ttf-roboto-mono
 
 # Virtual machine
 qemu-full
