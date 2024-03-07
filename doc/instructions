@@ -7,21 +7,21 @@
 # If the fonts are too small
 setfont iso01-12x22.psfu.gz
 
-# If kayboard layout is not 'us'
+# If keyboard layout is not 'us'
 localectl list-keymaps | grep br
 loadkeys br-latin1-us
 
 # If not connected with ethernet, connect to wifi
-iwd device list
-iwd station <device> get-networks
-iwd station <device> connect <network>
+iwctl device list
+iwctl station <device> get-networks
+iwctl station <device> connect <network>
 
 # Set location and time zone
 timedatectl set-ntp true
 timedatectl set-timezone America/Sao_Paulo 
 
 # Make sure keyring is updated
-pacman -Sy archlinux-keyring
+pacman -Sy --needed archlinux-keyring
 
 # Clone install files from github
 pacman -S git
@@ -52,17 +52,23 @@ cd yay; makepkg -si
 
 # Install AUR software
 yay -S google-chrome warsaw-bin etcher-bin otf-ibm-plex
-sudo systemctl enable warsaw
+sudo systemctl enable --now warsaw
 # Open web browser, go to https://www.dieboldnixdorf.com.br/warsaw and configure
 
 # Install printter and scanner drivers; configure printer at http://127.0.0.1:631
 yay -S brother-dcp-b7520dw brscan4
+# Setup printer in http:localhost:631
+#    Admin -> Add printer -> LPD/LPR
+#    Connection: lpd://192.168.1.244/binary-p1
+#    Name: brlaser, Description: DCP-B7520DW
+#    Maker/Manufacturer: Brother, then click on "Brother" and select driver
+# Setup scanner:
 sudo brsaneconfig4 -a name=brscanner model=Brother_DCP_B7520DW ip=192.168.1.244
 brsaneconfig4 -q
 
-# ##############################################
-# Or generate new ones and copy to other servers
-# ##############################################
+# ###############################################################
+# If not from backup, generate ssh keys and copy to other servers
+# ###############################################################
 #ssh-keygen -t rsa
 #ssh-copy-id narcizo@<server>
 
