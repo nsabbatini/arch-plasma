@@ -1,0 +1,15 @@
+[Unit]
+Description=SSHFS (castor)
+
+[Mount]
+What=narci@192.168.1.42:/G:/Users/Narcizo/
+Where=/home/narcizo/castor
+Type=fuse.sshfs
+TimeoutSec=20s
+Options=nofail,noauto,x-systemd.automount,x-systemd.mount-timeout=20,x-systemd.idle-timeout=10,_netdev,user,idmap=user,follow_symlinks,identityfile=/home/narcizo/.ssh/id_rsa,reconnect,allow_other,default_permissions,uid=1000,gid=1000
+LazyUnmount=true
+ForceUnmount=true
+
+[Install]
+WantedBy=remote-fs.target
+WantedBy=multi-user.target

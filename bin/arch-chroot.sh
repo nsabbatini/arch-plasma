@@ -62,7 +62,7 @@ systemctl enable cups
 systemctl enable sshd
 systemctl enable fstrim.timer
 systemctl enable logrotate.timer
-systemctl enable reflector
+systemctl enable reflector.timer
 systemctl enable systemd-boot-update
 systemctl enable systemd-timesyncd
 systemctl enable NetworkManager
@@ -73,6 +73,7 @@ systemctl enable smartd
 systemctl enable sddm
 systemctl enable libvirtd
 systemctl enable power-profiles-daemon
+systemctl enable home-narcizo-castor.automount
 echo "Enabling services done"
 
 echo ""

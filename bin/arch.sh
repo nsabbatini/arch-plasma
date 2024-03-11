@@ -52,7 +52,7 @@ mount $partition1 /mnt/boot/
 echo "Formatting and mounting done"
 
 echo "Downloading packages..."
-cat $pkgs | sed -E '/^#/d' | sed -E '/^\s*$/d' |  pacstrap /mnt -
+cat $pkgs | sed -E '/^#/d' | sed -E '/^\s*$/d' |  pacstrap -i /mnt -
 echo "Download done"
 
 echo "Creating /etc/fstab..."
