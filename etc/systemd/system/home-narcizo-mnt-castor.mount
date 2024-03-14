@@ -1,5 +1,6 @@
 [Unit]
 Description=SSHFS (castor)
+After=wait-for-ping.service
 
 [Mount]
 What=narci@192.168.1.42:/G:/Users/Narcizo/
