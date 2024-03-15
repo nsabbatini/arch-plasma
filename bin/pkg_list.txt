@@ -88,14 +88,20 @@ sddm
 #kde-education-meta
 #kde-games-meta
 kde-graphics-meta
-kde-multimedia-meta
-kde-network-meta
+#kde-multimedia-meta
+#kde-network-meta
 kde-office-meta
-kde-pim-meta
-kde-sdk-meta
+#kde-pim-meta
+#kde-sdk-meta
 kde-system-meta
 kde-utilities-meta
 #kdevelop-meta
+# Picked from kde-multimedia-meta
+elisa
+ffmpegthumbs
+kamoso
+kdenlive
+kwave
 
 # Desktop software
 firefox

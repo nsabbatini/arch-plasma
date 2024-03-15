@@ -56,6 +56,10 @@ echo "Choose a password for your user account"
 passwd $user
 echo "Non-root account done"
 
+echo "Creating disk mounts"
+mkdir -p /mnt/castor
+echo "Disk mounts done"
+
 echo "Enabling systemd services..."
 systemctl enable nftables
 systemctl enable cups
@@ -73,7 +77,7 @@ systemctl enable smartd
 systemctl enable sddm
 systemctl enable libvirtd
 systemctl enable power-profiles-daemon
-systemctl enable home-narcizo-castor.automount
+systemctl enable mnt-castor.automount
 echo "Enabling services done"
 
 echo ""

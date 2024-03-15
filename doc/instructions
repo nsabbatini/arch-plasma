@@ -131,6 +131,14 @@ echo "" >> /etc/profile
 echo "# Make electron apps use wayland" >> /etc/profile
 echo "export ELECTRON_OZONE_PLATFORM_HINT=auto" >> /etc/profile
 
-# Reboot to apply groups and activate daemon
-sudo reboot
+# The following is a workaroud for a KDE Plasma bug, which disables bluetooth after login.
+# Edit file ~/.config/bluedevilglobalrc and if you have the following (maybe with different MAC)
+[Adapters]
+4C:1D:96:DB:07:A8_powered=false
+# change to
+[Adapters]
+4C:1D:96:DB:07:A8_powered=true
+# then disable write permission on this file to prevent bluedevil from modifying it again:
+chmod -w ~/.config/bluedevilglobalrc
+
 
