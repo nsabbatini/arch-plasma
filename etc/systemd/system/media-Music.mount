@@ -1,0 +1,16 @@
+[Unit]
+Description=CIFS mount (Music on elefante)
+After=wait-for-ping.service
+
+[Mount]
+What=//192.168.1.104/Music
+Where=/media/Music
+Type=cifs
+TimeoutSec=20s
+Options=nofail,noauto,_netdev,user,rw,x-systemd.automount,x-systemd.mount-timeout=20,x-systemd.idle-timeout=10,iocharset=utf8,uid=1000,gid=1000,credentials=/home/narcizo/.cifs_creds
+LazyUnmount=true
+ForceUnmount=true
+
+[Install]
+WantedBy=remote-fs.target
+WantedBy=multi-user.target

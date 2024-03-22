@@ -58,6 +58,9 @@ echo "Non-root account done"
 
 echo "Creating disk mounts"
 mkdir -p /mnt/castor
+mkdir -p /media/Music
+mkdir -p /media/Pictures
+mkdir -p /media/Videos
 echo "Disk mounts done"
 
 echo "Enabling systemd services..."
@@ -78,6 +81,9 @@ systemctl enable sddm
 systemctl enable libvirtd
 systemctl enable power-profiles-daemon
 systemctl enable mnt-castor.automount
+systemctl enable media-Music.automount
+systemctl enable media-Pictures.automount
+systemctl enable media-Videos.automount
 echo "Enabling services done"
 
 echo ""

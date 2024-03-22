@@ -141,4 +141,7 @@ echo "export ELECTRON_OZONE_PLATFORM_HINT=auto" >> /etc/profile
 # then disable write permission on this file to prevent bluedevil from modifying it again:
 chmod -w ~/.config/bluedevilglobalrc
 
+# Enable dns resolution with avahi (for .local domain): edit the file /etc/nsswitch.conf
+# and change the hosts line to include mdns_minimal [NOTFOUND=return] before resolve and d
+hosts: mymachines mdns_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files myhostname dns
 

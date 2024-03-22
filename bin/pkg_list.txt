@@ -47,6 +47,7 @@ networkmanager
 bluez
 bluez-utils
 avahi
+nss-mdns
 openssh
 sshfs
 fuse3
@@ -57,6 +58,8 @@ tcpdump
 ethtool
 net-tools
 cloudflared
+samba
+cifs-utils
 
 # Printer
 cups
@@ -87,21 +90,66 @@ sddm
 #kde-accessibility-meta
 #kde-education-meta
 #kde-games-meta
-kde-graphics-meta
+#kde-graphics-meta
 #kde-multimedia-meta
 #kde-network-meta
-kde-office-meta
+#kde-office-meta
 #kde-pim-meta
 #kde-sdk-meta
-kde-system-meta
-kde-utilities-meta
+#kde-system-meta
+#kde-utilities-meta
 #kdevelop-meta
+
+# Picked from kde-graphics-meta
+colord-kde
+gwenview
+kamera
+kcolorchooser
+kdegraphics-thumbnailers
+okular
+spectacle
+
 # Picked from kde-multimedia-meta
 elisa
 ffmpegthumbs
 kamoso
 kdenlive
 kwave
+
+# Picked from kde-network-media
+kdeconnect
+kio-extras
+kio-gdrive
+kio-zeroconf
+krdc
+krfb
+
+# Picked from kde-sdk-meta
+dolphin-plugins
+
+# Picked from kde-system-meta
+dolphin
+kde-inotify-survey
+khelpcenter
+partitionmanager
+
+# Picked from kde-utilities-meta
+ark
+filelight
+isoimagewriter
+kbackup
+kcalc
+kcharselect
+kclock
+kdebugsettings
+kdf
+kdialog
+keditbookmarks
+kfind
+kgpg
+konsole
+kwalletmanager
+skanpage
 
 # Desktop software
 firefox
@@ -111,6 +159,7 @@ vlc
 phonon-qt6-vlc
 mpv
 haruna
+digikam
 
 # Fonts
 adobe-source-sans-fonts

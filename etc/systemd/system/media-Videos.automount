@@ -1,0 +1,9 @@
+[Unit]
+Description=CIFS automount (Videos on elefante)
+
+[Automount]
+Where=/media/Videos
+TimeoutIdleSec=10
+
+[Install]
+WantedBy=multi-user.target
