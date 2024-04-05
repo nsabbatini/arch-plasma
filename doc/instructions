@@ -78,8 +78,10 @@ brsaneconfig4 -q
 
 # If not installed yet, install ssh server in castor, following this link:
 # https://medium.com/rkttu/set-up-your-ssh-server-in-windows-10-native-way-1aab9021c3a6
-scp /home/narcizo/.ssh/id_rsa.pub narcizo@castor:/C:/Users/Narcizo/.ssh
-# In castor, open powershell with admin elevation:
+scp /home/narcizo/.ssh/id_rsa.pub narci@castor:/C:/Users/narci/.ssh
+# In castor, edit file C:\ProgramData\ssh\sshd_config and comment the last two lines (the
+# ones starting with "Match Group" and "AuthorizedKeysFile")
+# Open powershell with admin elevation and execute the following commands:
    cd C:\Users\Narcizo\.ssh
    rename id_rsa.pub authorized_keys
    $authorizedKeyFilePath = "C:\Users\Narcizo\.ssh\authorized_keys"
