@@ -85,9 +85,10 @@ scp /home/narcizo/.ssh/id_rsa.pub narci@castor:/C:/Users/narci/.ssh
    cd C:\Users\Narcizo\.ssh
    rename id_rsa.pub authorized_keys
    $authorizedKeyFilePath = "C:\Users\Narcizo\.ssh\authorized_keys"
-   icacls.exe $authorizedKeyFilePath /remove “NT AUTHORITY\Authenticated Users”
    icacls.exe $authorizedKeyFilePath /inheritance:r
    Get-Acl “$env:ProgramData\ssh\ssh_host_dsa_key” | Set-Acl $authorizedKeyFilePath
+   New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -PropertyType String -Force
+   wsl --install # Follow instruction to create user   
 mkdir /home/narcizo/castor
 vim /home/narcizo/.profile
    # Mount sshfs disk on castor

@@ -1,0 +1,9 @@
+[Unit]
+Description=CIFS automount (Backup-linux on elefante)
+
+[Automount]
+Where=/mnt/backup
+TimeoutIdleSec=10
+
+[Install]
+WantedBy=multi-user.target
