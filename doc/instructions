@@ -51,7 +51,7 @@ git clone https://aur.archlinux.org/yay.git
 cd yay; makepkg -si
 
 # Install AUR software
-yay -S google-chrome warsaw-bin etcher-bin otf-ibm-plex
+yay -S google-chrome warsaw-bin etcher-bin otf-ibm-plex papirus-folders-catppuccin-git
 sudo systemctl enable --now warsaw
 # Open web browser, go to https://www.dieboldnixdorf.com.br/warsaw and configure
 
@@ -148,3 +148,10 @@ chmod -w ~/.config/bluedevilglobalrc
 # and change the hosts line to include mdns_minimal [NOTFOUND=return] before resolve and d
 hosts: mymachines mdns_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files myhostname dns
 
+# Go to Plasma dektop -> System Settings -> Colors & Themes -> Colors
+# Install macchiato color scheme and use it
+# The papirus-icon-theme and papirus-folder for macchiato were previously installed.
+# Change folder color in papirus-dark to match catppuccino-mocha
+# https://github.com/catppuccin/papirus-folders
+papirus-folders -h
+papirus-folders -C cat-mocha-maroon --theme Papirus-Dark

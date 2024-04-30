@@ -35,6 +35,7 @@ mtools
 dosfstools
 duf
 tree
+cryfs
 
 # Package manager
 reflector
@@ -160,6 +161,7 @@ phonon-qt6-vlc
 mpv
 haruna
 digikam
+papirus-icon-theme
 
 # Fonts
 adobe-source-sans-fonts
