@@ -20,6 +20,7 @@ fwupd
 util-linux
 lm_sensors
 smartmontools
+solaar
 
 # Dev tools
 vim
@@ -28,7 +29,7 @@ rsync
 curl
 wget
 htop
-neofetch
+smartfetch
 
 # Filesystem utils
 mtools
