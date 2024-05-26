@@ -66,6 +66,7 @@ cifs-utils
 # Printer
 cups
 cups-pdf
+system-config-printer
 
 # Power management
 power-profiles-daemon
