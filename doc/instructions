@@ -155,3 +155,7 @@ hosts: mymachines mdns_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files
 # https://github.com/catppuccin/papirus-folders
 papirus-folders -h
 papirus-folders -C cat-mocha-maroon --theme Papirus-Dark
+
+# Install yubico authenticator
+yay -S yubico-authenticator
+sudo systemctl enable --now pcscd.socket
