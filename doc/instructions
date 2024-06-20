@@ -38,12 +38,10 @@ cp /root/*.log /mnt/root/
 umount -a
 poweroff
 
-# ###################################################
-# Power-on, login as normal user, then retrive backup
-# ###################################################
-mkdir /home/narcizo/backup
-scp -r narcizo@ganso:/media/ssd/lince.localdomain/daily.0/narcizo/ /home/narcizo/backup/
-# Choose files and copy from the backup folder, DO NOT FORGET THE SSH KEYS
+
+# ###################################################################################
+# Power-on, login as normal user, then retrive home directory backup from /mnt/backup
+# ###################################################################################
 
 # Install yay
 mkdir /home/$USER/aur; cd /home/$USER/aur
@@ -51,9 +49,8 @@ git clone https://aur.archlinux.org/yay.git
 cd yay; makepkg -si
 
 # Install AUR software
-yay -S google-chrome warsaw-bin etcher-bin otf-ibm-plex papirus-folders-catppuccin-git
-sudo systemctl enable --now warsaw
-# Open web browser, go to https://www.dieboldnixdorf.com.br/warsaw and configure
+yay -S google-chrome etcher-bin otf-ibm-plex papirus-folders-catppuccin-git yubico-authenticator
+sudo systemctl enable --now pcscd.socket
 
 # Install printter and scanner drivers; configure printer at http://127.0.0.1:631
 yay -S brother-dcp-b7520dw brscan4
@@ -66,39 +63,33 @@ yay -S brother-dcp-b7520dw brscan4
 sudo brsaneconfig4 -a name=brscanner model=Brother_DCP_B7520DW ip=192.168.1.244
 brsaneconfig4 -q
 
-# ###############################################################
-# If not from backup, generate ssh keys and copy to other servers
-# ###############################################################
+# If not recovered from backup, generate ssh keys and copy to other servers
 #ssh-keygen -t rsa
 #ssh-copy-id narcizo@<server>
 
-# ##########################
-# Mount sshfs disk on castor
-# ##########################
-
-# If not installed yet, install ssh server in castor, following this link:
+# If not done yet, enable sshfs server on castor. Procedure below is from this link:
 # https://medium.com/rkttu/set-up-your-ssh-server-in-windows-10-native-way-1aab9021c3a6
 scp /home/narcizo/.ssh/id_rsa.pub narci@castor:/C:/Users/narci/.ssh
 # In castor, edit file C:\ProgramData\ssh\sshd_config and comment the last two lines (the
 # ones starting with "Match Group" and "AuthorizedKeysFile")
 # Open powershell with admin elevation and execute the following commands:
-   cd C:\Users\Narcizo\.ssh
-   rename id_rsa.pub authorized_keys
-   $authorizedKeyFilePath = "C:\Users\Narcizo\.ssh\authorized_keys"
-   icacls.exe $authorizedKeyFilePath /inheritance:r
-   Get-Acl “$env:ProgramData\ssh\ssh_host_dsa_key” | Set-Acl $authorizedKeyFilePath
-   New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -PropertyType String -Force
-   wsl --install # Follow instruction to create user   
-mkdir /home/narcizo/castor
-vim /home/narcizo/.profile
-   # Mount sshfs disk on castor
-   REMOTE="narci@192.168.1.42:/G:/Users/Narcizo/"
-   LOCAL="/home/narcizo/castor"
-   MOUNTED=$( /usr/bin/mount | grep -E "^${REMOTE}" | /usr/bin/awk '{print $3}' )
+cd C:\Users\narci\.ssh
+rename id_rsa.pub authorized_keys
+$authorizedKeyFilePath = "C:\Users\narci\.ssh\authorized_keys"
+icacls.exe $authorizedKeyFilePath /inheritance:r
+Get-Acl “$env:ProgramData\ssh\ssh_host_dsa_key” | Set-Acl $authorizedKeyFilePath
+New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -PropertyType String -Force
 
-   if [ -z "$MOUNTED" ] ; then
-      /usr/bin/sshfs $REMOTE $LOCAL -o uid=1000,gid=1000,reconnect,ServerAliveInterval=15,ServerAliveCountMax=3
-   fi
+# The install scripts already creates an automount for castor on /mnt/castor but, if needed,
+# the following can be used:
+mkdir /home/narcizo/castor
+REMOTE="narci@192.168.1.42:/G:/Users/Narcizo/"
+LOCAL="/home/narcizo/castor"
+sshfs $REMOTE $LOCAL -o uid=1000,gid=1000,reconnect,ServerAliveInterval=15,ServerAliveCountMax=3
+
+# ###############################################################
+# Support for virtual machines (run all as root)
+# ###############################################################
 
 # Create a bridge br0 with STP disabled (to avoid the bridge being advertised on the network)
 # This bridge is necessary to have bridge network connections in virt/qemu/kvm VMs
@@ -118,21 +109,41 @@ nmcli connection down 'Wired connection 3'
 
 # Bring the new bridge up
 nmcli connection up bridge-br0
+# Connect the slave (choose the one that is connected)
 nmcli connection up bridge-slave-enp0s20f0u1
+#nmcli connection up bridge-slave-enp0s20f0u6u3
+
+# The following script is called by NetworkManager when a network a connection (or disconnection)
+# happens, e.g. when we plug or unplug the ethernet adapter from the usb port. If it detects that
+# the ethernet adapter was disconnected, then it removes the bridge interface to allow connection to wifi.
+
+cat << EOF > /etc/NetworkManager/dispatcher.d/70-bridge-down.sh
+#!/bin/bash
+
+interface=$1
+action=$2
+
+[[ $interface == "enp0s20f0u1" && $action == "down" ]] && { nmcli connection down bridge-br0; exit 0; }
+[[ $interface == "enp0s20f0u6u3" && $action == "down" ]] && { nmcli connection down bridge-br0; exit 0; }
+EOF
 
 ###################################################
 # The following is to make applications use wayland
 ###################################################
 
-# For Chrome and chromium based browsers
-# 1. Go to chrome://flags
-# 2. Search for "Preferred Ozone platform"
-# 3. Set it to "auto"
+cat << EOF > /home/narcizo/.config/chrome-flags.conf
+--enable-features=UseOzonePlatform
+--ozone-platform=wayland
+EOF
 
-# For electron apps:
-echo "" >> /etc/profile
-echo "# Make electron apps use wayland" >> /etc/profile
-echo "export ELECTRON_OZONE_PLATFORM_HINT=auto" >> /etc/profile
+cat << EOF > /home/narcizo/.config/electron-flags.conf
+--enable-features=WaylandWindowDecorations
+--ozone-platform-hint=auto
+EOF
+
+###################################################
+# Miscellaneous
+###################################################
 
 # The following is a workaroud for a KDE Plasma bug, which disables bluetooth after login.
 # Edit file ~/.config/bluedevilglobalrc and if you have the following (maybe with different MAC)
@@ -145,7 +156,7 @@ echo "export ELECTRON_OZONE_PLATFORM_HINT=auto" >> /etc/profile
 chmod -w ~/.config/bluedevilglobalrc
 
 # Enable dns resolution with avahi (for .local domain): edit the file /etc/nsswitch.conf
-# and change the hosts line to include mdns_minimal [NOTFOUND=return] before resolve and d
+# and change the hosts line to include mdns_minimal [NOTFOUND=return] before resolve
 hosts: mymachines mdns_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files myhostname dns
 
 # Go to Plasma dektop -> System Settings -> Colors & Themes -> Colors
@@ -156,6 +167,3 @@ hosts: mymachines mdns_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files
 papirus-folders -h
 papirus-folders -C cat-mocha-maroon --theme Papirus-Dark
 
-# Install yubico authenticator
-yay -S yubico-authenticator
-sudo systemctl enable --now pcscd.socket
