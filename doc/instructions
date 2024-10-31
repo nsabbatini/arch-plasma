@@ -107,6 +107,12 @@ nmcli connection show --active
 # the connection name obtained above is 'Wired connection 3'
 nmcli connection down 'Wired connection 3'
 
+# Set routing priorities
+nmcli con mod bridge-br0 ipv4.route-metric 20
+nmcli con mod bridge-br0 ipv6.route-metric 20
+nmcli con mod Sabbatini ipv4.route-metric 40
+nmcli con mod Sabbatini ipv6.route-metric 40
+
 # Bring the new bridge up
 nmcli connection up bridge-br0
 # Connect the slave (choose the one that is connected)
