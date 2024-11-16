@@ -147,6 +147,11 @@ cat << EOF > /home/narcizo/.config/electron-flags.conf
 --ozone-platform-hint=auto
 EOF
 
+cat << EOF > /home/narcizo/.config/spotify-flags.conf
+--enable-features=WaylandWindowDecorations
+--ozone-platform-hint=auto
+EOF
+
 ###################################################
 # Miscellaneous
 ###################################################
