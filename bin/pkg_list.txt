@@ -46,7 +46,6 @@ flatpak
 # Network
 nftables
 networkmanager
-iwd
 bluez
 bluez-utils
 avahi
