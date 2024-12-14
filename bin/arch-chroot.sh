@@ -74,6 +74,7 @@ systemctl enable systemd-boot-update
 systemctl enable systemd-timesyncd
 systemctl enable NetworkManager
 systemctl disable wpa_supplicant
+systemctl enalbe iwd
 systemctl enable avahi-daemon
 systemctl enable bluetooth
 systemctl enable smartd
