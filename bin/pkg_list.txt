@@ -45,7 +45,7 @@ flatpak
 
 # Network
 nftables
-networkmanager
+iwd
 bluez
 bluez-utils
 avahi
@@ -174,7 +174,9 @@ noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
 noto-fonts-extra
+# Install ibm-plex otf version from aur
 #ttf-ibm-plex
+ttf-ibmplex-mono-nerd
 
 # Virtual machine
 qemu-full

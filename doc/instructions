@@ -13,6 +13,7 @@ loadkeys br-latin1-us
 
 # If not connected with ethernet, connect to wifi
 iwctl device list
+iwctl station <device> scan
 iwctl station <device> get-networks
 iwctl station <device> connect <network>
 
@@ -43,13 +44,16 @@ poweroff
 # Power-on, login as normal user, then retrive home directory backup from /mnt/backup
 # ###################################################################################
 
+# Enable mdns hostname resolution with avahi. Edit /etc/nsswitch.conf
+hosts: mymachines mdns_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files myhostname dns
+
 # Install yay
 mkdir /home/$USER/aur; cd /home/$USER/aur
 git clone https://aur.archlinux.org/yay.git
 cd yay; makepkg -si
 
 # Install AUR software
-yay -S google-chrome etcher-bin otf-ibm-plex papirus-folders-catppuccin-git yubico-authenticator
+yay -S google-chrome etcher-bin otf-ibm-plex yubico-authenticator
 sudo systemctl enable --now pcscd.socket
 
 # Install printter and scanner drivers; configure printer at http://127.0.0.1:631
@@ -89,49 +93,50 @@ sshfs $REMOTE $LOCAL -o uid=1000,gid=1000,reconnect,ServerAliveInterval=15,Serve
 
 # ###############################################################
 # Support for virtual machines (run all as root)
+# Below os obsolete; now using systemd-networkd
 # ###############################################################
 
 # Create a bridge br0 with STP disabled (to avoid the bridge being advertised on the network)
 # This bridge is necessary to have bridge network connections in virt/qemu/kvm VMs
-nmcli connection add type bridge ifname br0 stp no
+#nmcli connection add type bridge ifname br0 stp no
 
 # Make slave ethernet connections to the bridge.
 # Lines below are for the two USB-to-ethernet adapters that I have.
-nmcli connection add type bridge-slave ifname enp0s20f0u1 master br0
-nmcli connection add type bridge-slave ifname enp0s20f0u6u3 master br0
+#nmcli connection add type bridge-slave ifname enp0s20f0u1 master br0
+#nmcli connection add type bridge-slave ifname enp0s20f0u6u3 master br0
 
 # Find out the connection name
-nmcli connection show --active
+#nmcli connection show --active
 
 # Bring the existing connection down. In the command line below,
 # the connection name obtained above is 'Wired connection 3'
-nmcli connection down 'Wired connection 3'
+#nmcli connection down 'Wired connection 3'
 
 # Set routing priorities
-nmcli con mod bridge-br0 ipv4.route-metric 20
-nmcli con mod bridge-br0 ipv6.route-metric 20
-nmcli con mod Sabbatini ipv4.route-metric 40
-nmcli con mod Sabbatini ipv6.route-metric 40
+#nmcli con mod bridge-br0 ipv4.route-metric 20
+#nmcli con mod bridge-br0 ipv6.route-metric 20
+#nmcli con mod Sabbatini ipv4.route-metric 40
+#nmcli con mod Sabbatini ipv6.route-metric 40
 
 # Bring the new bridge up
-nmcli connection up bridge-br0
+#nmcli connection up bridge-br0
 # Connect the slave (choose the one that is connected)
-nmcli connection up bridge-slave-enp0s20f0u1
+#nmcli connection up bridge-slave-enp0s20f0u1
 #nmcli connection up bridge-slave-enp0s20f0u6u3
 
 # The following script is called by NetworkManager when a network a connection (or disconnection)
 # happens, e.g. when we plug or unplug the ethernet adapter from the usb port. If it detects that
 # the ethernet adapter was disconnected, then it removes the bridge interface to allow connection to wifi.
 
-cat << EOF > /etc/NetworkManager/dispatcher.d/70-bridge-down.sh
+#cat << EOF > /etc/NetworkManager/dispatcher.d/70-bridge-down.sh
 #!/bin/bash
 
-interface=$1
-action=$2
+#interface=$1
+#action=$2
 
-[[ $interface == "enp0s20f0u1" && $action == "down" ]] && { nmcli connection down bridge-br0; exit 0; }
-[[ $interface == "enp0s20f0u6u3" && $action == "down" ]] && { nmcli connection down bridge-br0; exit 0; }
-EOF
+#[[ $interface == "enp0s20f0u1" && $action == "down" ]] && { nmcli connection down bridge-br0; exit 0; }
+#[[ $interface == "enp0s20f0u6u3" && $action == "down" ]] && { nmcli connection down bridge-br0; exit 0; }
+#EOF
 
 ###################################################
 # The following is to make applications use wayland
@@ -166,15 +171,12 @@ EOF
 # then disable write permission on this file to prevent bluedevil from modifying it again:
 chmod -w ~/.config/bluedevilglobalrc
 
-# Enable dns resolution with avahi (for .local domain): edit the file /etc/nsswitch.conf
-# and change the hosts line to include mdns_minimal [NOTFOUND=return] before resolve
-hosts: mymachines mdns_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files myhostname dns
-
 # Go to Plasma dektop -> System Settings -> Colors & Themes -> Colors
-# Install macchiato color scheme and use it
-# The papirus-icon-theme and papirus-folder for macchiato were previously installed.
-# Change folder color in papirus-dark to match catppuccino-mocha
-# https://github.com/catppuccin/papirus-folders
-papirus-folders -h
-papirus-folders -C cat-mocha-maroon --theme Papirus-Dark
+# Install "Catppuccin Frappe Flamingo" color scheme and use it together with "breeze"
 
+# Click right-mouse button on taskbar, enter edit mode and dowload/install
+# "Command Output" widget. Then configure it to use scripts in ~/bin/network-status.sh
+# (for command) and ~/bin/network-hover.sh (for tooltip action).
+
+# To connect to new wifi, use iwctl (iwctl --help) or impala. There is also a helpful alias
+# in .bashrc (get it from backup) called "wifi".

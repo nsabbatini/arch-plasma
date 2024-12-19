@@ -72,9 +72,11 @@ systemctl enable logrotate.timer
 systemctl enable reflector.timer
 systemctl enable systemd-boot-update
 systemctl enable systemd-timesyncd
-systemctl enable NetworkManager
-systemctl enable wpa_supplicant
+systemctl enable systemd-networkd
+systemctl enable systemd-resolved
+systemctl enable iwd
 systemctl enable avahi-daemon
+systemctl enable avahi-daemon.socket
 systemctl enable bluetooth
 systemctl enable smartd
 systemctl enable sddm
