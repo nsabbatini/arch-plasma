@@ -7,7 +7,7 @@ RequiredForOnline=routable
 [Network]
 DHCP=yes
 IPv6AcceptRA=yes
-IgnoreCarrierLoss=3s
+#IgnoreCarrierLoss=3s
 Domains=localdomain
 
 [DHCPv4]
