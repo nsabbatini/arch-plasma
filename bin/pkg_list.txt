@@ -120,7 +120,7 @@ kdenlive
 kwave
 
 # Picked from kde-network-media
-kdeconnect
+#kdeconnect
 kio-extras
 kio-gdrive
 kio-zeroconf
