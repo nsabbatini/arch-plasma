@@ -45,7 +45,7 @@ poweroff
 # ###################################################################################
 
 # Enable mdns hostname resolution with avahi. Edit /etc/nsswitch.conf
-hosts: mymachines mdns_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files myhostname dns
+hosts: mymachines mdns4_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files myhostname dns
 
 # Install yay
 mkdir /home/$USER/aur; cd /home/$USER/aur
@@ -56,16 +56,24 @@ cd yay; makepkg -si
 yay -S google-chrome etcher-bin otf-ibm-plex yubico-authenticator
 sudo systemctl enable --now pcscd.socket
 
-# Install printter and scanner drivers; configure printer at http://127.0.0.1:631
-yay -S brother-dcp-b7520dw brscan4
+# Install Brother printer driver
+yay -S brother-dcp-b7520dw
 # Setup printer in http:localhost:631
 #    Admin -> Add printer -> LPD/LPR
 #    Connection: lpd://192.168.1.244/binary-p1
 #    Name: brlaser, Description: DCP-B7520DW
 #    Maker/Manufacturer: Brother, then click on "Brother" and select driver
-# Setup scanner:
+
+# Install scanner driver and service to accept scan initiated remotely on the scanner.
+# Scans initiated remotely are stored in /srv/brscan-skey/brscan, under user brscan-skey,
+# need to open port UDP 54925 on the firewall. To facilitate handling files in
+# /srv/brscan-skey, we put the main user into brscan-skey group.
+yay -S brscan4 brscan-skey gtk2
 sudo brsaneconfig4 -a name=brscanner model=Brother_DCP_B7520DW ip=192.168.1.244
 brsaneconfig4 -q
+sudo systemctl enable --now brscan-skey
+sudo /opt/brother/scanner/brscan-skey/brscan-skey -u lince
+sudo usermod -a -G brscan-skey narcizo
 
 # If not recovered from backup, generate ssh keys and copy to other servers
 #ssh-keygen -t rsa
