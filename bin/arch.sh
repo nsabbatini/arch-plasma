@@ -73,7 +73,7 @@ rsync -v -r /root/arch-plasma/etc/ /mnt/etc/
 echo "Done"
 
 echo "Configuring hostname, language, keymap..."
-echo "$host" > /mnt/etc/hostname
+echo $host > /mnt/etc/hostname
 echo "en_US.UTF-8 UTF-8" > /mnt/etc/locale.gen
 echo "LANG=en_US.UTF-8" > /mnt/etc/locale.conf
 echo "KEYMAP=br-latin1-us" > /mnt/etc/vconsole.conf

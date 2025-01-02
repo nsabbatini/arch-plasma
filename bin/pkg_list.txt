@@ -29,7 +29,7 @@ rsync
 curl
 wget
 htop
-smartfetch
+festfetch
 
 # Filesystem utils
 mtools

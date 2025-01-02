@@ -83,6 +83,10 @@ mkdir -p /media/Pictures
 mkdir -p /media/Videos
 echo "Disk mounts done"
 
+# Configure systemd-resolved
+rm /etc/resolv.conf
+ln -s /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+
 echo "Enabling systemd services..."
 systemctl enable nftables
 systemctl enable cups

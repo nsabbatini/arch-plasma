@@ -27,10 +27,14 @@ timedatectl set-timezone America/Sao_Paulo
 # Update the package list
 pacman -Sy
 
-# Make sure keyring is updated
-pacman -Syu --needed archlinux-keyring
+# Edit /etc/ssh/sshd_config and change PermitRootLogin to yes, then create root password
+passwd
 
-# Clone install files from github
+# Make sure keyring is updated
+pacman -S --needed archlinux-keyring
+
+# Make an ssh connection from another linux machine and copy (with scp) the install
+# scripts; or else clone from github
 pacman -S git
 git clone https://github.com/nsabbatini/arch-plasma.git
 
@@ -50,16 +54,19 @@ poweroff
 # Power-on, login as normal user, then retrive home directory backup from /mnt/backup
 # ###################################################################################
 
+# Make sure that /etc/resolv.conf is a link to /run/systemd/resolve/stub-resolv.conf
+# Edit /etc/systemd/resolved.conf, uncomment and change the following line:
+    MulticastDNS=no
 # Enable mdns hostname resolution with avahi. Edit /etc/nsswitch.conf
 hosts: mymachines mdns4_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files myhostname dns
 
 # Install yay
 mkdir /home/$USER/aur; cd /home/$USER/aur
-git clone https://aur.archlinux.org/yay.git
-cd yay; makepkg -si
+git clone https://aur.archlinux.org/yay-bin.git
+cd yay-bin; makepkg -si
 
 # Install AUR software
-yay -S google-chrome spotify etcher-bin yubico-authenticator downgrade konsave
+yay -S google-chrome spotify etcher-bin yubico-authenticator-bin downgrade konsave
 sudo systemctl enable --now pcscd.socket
 
 # Install Brother printer driver
