@@ -1,0 +1,197 @@
+# #######################################################################################
+# Basic preparations to install on laptop
+#   3. connect ethernet cable using an usb ethernet adaptor
+#   4. attach usb with Arch Linux install media and boot from it
+# #######################################################################################
+
+# If the fonts are too small
+setfont iso01-12x22.psfu.gz
+
+# If keyboard layout is not 'us'
+localectl list-keymaps | grep br
+loadkeys br-latin1-us
+
+# If not connected with ethernet, connect to wifi
+iwctl device list
+iwctl station <device> scan
+iwctl station <device> get-networks
+iwctl station <device> connect <network>
+
+# Set location and time zone
+timedatectl set-ntp true
+timedatectl set-timezone America/Sao_Paulo 
+
+# If 32-bit applications are needed (e.g., steam), edit /etc/pacman.conf and uncomment:
+   #[multilib]
+   #Include = /etc/pacman.d/mirrorlist
+# Update the package list
+pacman -Sy
+
+# Make sure keyring is updated
+pacman -Syu --needed archlinux-keyring
+
+# Clone install files from github
+pacman -S git
+git clone https://github.com/nsabbatini/arch-plasma.git
+
+######### DON'T FORGET TO MODIFY THE PARAMETERS.SH FILE ##########
+# Configure install parameters in file /root/router/bin/parameters.sh and run install script
+/root/arch-plasma/bin/arch.sh > >(tee -a /root/arch.stdout.log) 2> >(tee -a /root/arch.stderr.log >&2)
+
+# Save install log to SSD
+cp /root/*.log /mnt/root/
+
+# Remove install media and power-off
+umount -a
+poweroff
+
+
+# ###################################################################################
+# Power-on, login as normal user, then retrive home directory backup from /mnt/backup
+# ###################################################################################
+
+# Enable mdns hostname resolution with avahi. Edit /etc/nsswitch.conf
+hosts: mymachines mdns4_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files myhostname dns
+
+# Install yay
+mkdir /home/$USER/aur; cd /home/$USER/aur
+git clone https://aur.archlinux.org/yay.git
+cd yay; makepkg -si
+
+# Install AUR software
+yay -S google-chrome spotify etcher-bin yubico-authenticator downgrade konsave
+sudo systemctl enable --now pcscd.socket
+
+# Install Brother printer driver
+yay -S brother-dcp-b7520dw
+# Setup printer in http:localhost:631
+#    Admin -> Add printer -> LPD/LPR
+#    Connection: lpd://192.168.1.244/binary-p1
+#    Name: brlaser, Description: DCP-B7520DW
+#    Maker/Manufacturer: Brother, then click on "Brother" and select driver
+
+# Install scanner driver and service to accept scan initiated remotely on the scanner.
+# Scans initiated remotely are stored in /srv/brscan-skey/brscan, under user brscan-skey,
+# need to open port UDP 54925 on the firewall. To facilitate handling files in
+# /srv/brscan-skey, we put the main user into brscan-skey group.
+yay -S brscan4 brscan-skey gtk2
+sudo brsaneconfig4 -a name=brscanner model=Brother_DCP_B7520DW ip=192.168.1.244
+brsaneconfig4 -q
+sudo systemctl enable --now brscan-skey
+sudo /opt/brother/scanner/brscan-skey/brscan-skey -u <host_name>
+sudo usermod -a -G brscan-skey <user>
+
+
+###################################################
+# The following is to make applications use wayland
+###################################################
+
+# Replace username
+user=<username>
+
+cat << EOF > /home/$user/.config/chrome-flags.conf
+--enable-features=UseOzonePlatform
+--ozone-platform=wayland
+EOF
+
+cat << EOF > /home/$user/.config/electron-flags.conf
+--enable-features=WaylandWindowDecorations
+--ozone-platform-hint=auto
+EOF
+
+cat << EOF > /home/$user/.config/spotify-flags.conf
+--enable-features=WaylandWindowDecorations
+--ozone-platform-hint=auto
+EOF
+
+############################
+# Themesi, widgets and fonts
+############################
+
+# Install otf version of IMB Plex fonts then fo to Plasma desktop -> Text & Fonts
+# and choose IBM Plex Sans with the appropriate sizes for the monitor
+yay -S otf-ibm-plex
+
+# Go to Plasma desktop -> System Settings -> Colors & Themes -> Colors
+# Install "Catppuccin Frappe Flamingo" color scheme and use it together with "breeze dark"
+
+# RMB click on panel, click "Show Panel Configuration" then set:
+#    Position: Top
+#    Alignment: Center
+#    Width: Full width
+#    Visibility: Always visible
+#    Opacity: Adaptive
+#    Style: turn-off floating
+#    Panel Height: 32
+#    Focus shortcut: None 
+# Add/arrange the widgets:
+#    Keep Application Launcher
+#    Remove Task Manager
+#    Add Global Menu
+#    Panel Spacer
+#    Add (or move) Pager after the spacer (keep it at center)
+#    Panel Spacer
+#    Add Command Output (if using wifi on laptop, see config below)
+#    Margin Separator
+#    Keep System Tray
+# Exit edit mode
+
+# If using "Command Output" widget, configure it to use scripts in ~/bin/network-status.sh
+# (for command) and ~/bin/network-hover.sh (for tooltip action).
+
+# If using systemd-networkd with iwd, there is no widget on the system tray to connecto to wifi.
+# Instead, use iwctl (iwctl --help) or impala. There is also a helpful alias in .bashrc
+# (get it from backup) called "wifi".
+
+# RMB click on empty desktop with RMB, click "Enter Edit Mode" -> "Add Panel" -> "Empty Panel".
+# RMP click on panel, click "Add or Manage Widgets", Add "Icons-Only Task Manager", then exit.
+# Add applications to the new task manager on new panel:
+#    System Settings
+#    Discover
+#    Konsole
+#    Google Chrome
+#    BitWarden
+#    digiKam
+#    Virtual Machine Manager
+#    Spotify
+#    Firefox
+# RMB click on new panel, click "Show Panel Configuration" then set:
+#    Position: Bottom
+#    Alignment: Center
+#    Width: Fit content
+#    Visibility: Dodge windows
+#    Opacity: Adaptive
+#    Style: turn-on floating
+#    Panel Height: 60
+#    Focus shortcut: None 
+# Exit edit mode
+
+# It is also possible to export KDE configuration in one machine and import in another.
+# In the source machine:
+konsave -s <profile-name>
+konsave -e <export-name> -d <export_directory>
+# In the receiving machine:
+konsave -i </path/to/export-name>
+
+################
+# Configure SDDM
+################
+
+# The config files already configure SDDM to use wayland, but to use the plasma theme do:
+# go to Plasma desktop -> Colors & Themes > Login Screen (SDDM), choose SDDM there and
+# click "Apply Plasma Settings..."
+
+
+###################################################
+# Miscellaneous
+###################################################
+
+# The following is a workaroud for a KDE Plasma bug, which disables bluetooth after login.
+# Edit file ~/.config/bluedevilglobalrc and if you have the following (maybe with different MAC)
+[Adapters]
+4C:1D:96:DB:07:A8_powered=false
+# change to
+[Adapters]
+4C:1D:96:DB:07:A8_powered=true
+# then disable write permission on this file to prevent bluedevil from modifying it again:
+chmod -w ~/.config/bluedevilglobalrc

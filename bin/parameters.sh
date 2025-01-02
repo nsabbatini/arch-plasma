@@ -12,3 +12,7 @@
 
 # hostname
 #host="lince"
+
+# Type of GPU
+#gpu="intel"
+#gpu="nvidia"

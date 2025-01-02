@@ -1,9 +1,0 @@
-[Unit]
-Description=SSHSF automount (castor)
-
-[Automount]
-Where=/mnt/castor
-TimeoutIdleSec=10
-
-[Install]
-WantedBy=multi-user.target

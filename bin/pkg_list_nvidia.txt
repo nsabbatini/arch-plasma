@@ -1,0 +1,14 @@
+# Nvidia drivers for NV162 (TU102) GeForce RTX 2080 Ti
+dkms
+nvidia-dkms
+nvidia-utils
+nvidia-settings
+opencl-nvidia
+lib32-nvidia-utils
+lib32-opencl-nvidia
+nvtop
+
+# Steam
+steam
+ttf-liberation
+lib32-systemd

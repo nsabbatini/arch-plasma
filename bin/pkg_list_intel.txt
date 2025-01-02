@@ -1,0 +1,4 @@
+# Intel GPU drivers
+intel-media-driver
+intel-gpu-tools
+vulkan-intel

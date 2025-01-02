@@ -1,0 +1,45 @@
+# ###################################################################
+# Support for virtual machines using NetworkManager (run all as root)
+# ###################################################################
+
+# Create a bridge br0 with STP disabled (to avoid the bridge being advertised on the network)
+# This bridge is necessary to have bridge network connections in virt/qemu/kvm VMs
+#nmcli connection add type bridge ifname br0 stp no
+
+# Make slave ethernet connections to the bridge.
+# Lines below are for the two USB-to-ethernet adapters that I have.
+#nmcli connection add type bridge-slave ifname enp0s20f0u1 master br0
+#nmcli connection add type bridge-slave ifname enp0s20f0u6u3 master br0
+
+# Find out the connection name
+#nmcli connection show --active
+
+# Bring the existing connection down. In the command line below,
+# the connection name obtained above is 'Wired connection 3'
+#nmcli connection down 'Wired connection 3'
+
+# Set routing priorities
+#nmcli con mod bridge-br0 ipv4.route-metric 20
+#nmcli con mod bridge-br0 ipv6.route-metric 20
+#nmcli con mod Sabbatini ipv4.route-metric 40
+#nmcli con mod Sabbatini ipv6.route-metric 40
+
+# Bring the new bridge up
+#nmcli connection up bridge-br0
+# Connect the slave (choose the one that is connected)
+#nmcli connection up bridge-slave-enp0s20f0u1
+#nmcli connection up bridge-slave-enp0s20f0u6u3
+
+# The following script is called by NetworkManager when a network a connection (or disconnection)
+# happens, e.g. when we plug or unplug the ethernet adapter from the usb port. If it detects that
+# the ethernet adapter was disconnected, then it removes the bridge interface to allow connection to wifi.
+
+#cat << EOF > /etc/NetworkManager/dispatcher.d/70-bridge-down.sh
+#!/bin/bash
+
+#interface=$1
+#action=$2
+
+#[[ $interface == "enp0s20f0u1" && $action == "down" ]] && { nmcli connection down bridge-br0; exit 0; }
+#[[ $interface == "enp0s20f0u6u3" && $action == "down" ]] && { nmcli connection down bridge-br0; exit 0; }
+#EOF

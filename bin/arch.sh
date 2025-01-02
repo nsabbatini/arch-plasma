@@ -6,16 +6,25 @@ echo "######################"
 echo ""
 
 bin_dir="/root/arch-plasma/bin"
-param="$bin_dir/parameters.sh"
-pkgs="$bin_dir/pkg_list.txt"
 
 # Before running this script, define parameters in file parameters.sh
 echo "Checking config parameters..."
-source $param
+source $bin_dir/parameters.sh
 
 [[ $disk =~ .*sda|.*nvme0n1|.*vda ]] || { echo "Error: disk must be sda, nvme0n1 or vda"; exit 1; }
 [[ -z "$host" ]] && { echo "Error: variable host undefined"; exit 1; }
+[[ -z "$gpu" ]] && { echo "Error: variable gpu undefined"; exit 1; }
 echo "Done"
+
+# Select packages to be installed
+if [[ $gpu == "intel" ]]; then
+    pkgs="$bin_dir/pkg_list.txt $bin_dir/pkg_list_intel.txt"
+elif [[ $gpu == "nvidia" ]]; then
+    pkgs="$bin_dir/pkg_list.txt $bin_dir/pkg_list_nvidia.txt"
+else
+    echo "Error: wrong GPU type specified in parameters.sh"
+    exit 1
+fi
 
 echo "Creating partitions on $disk..."
 if [[ $disk == "/dev/sda" ]]; then
@@ -76,6 +85,53 @@ cat << EOF > /mnt/etc/hosts
 ::1       localhost
 EOF
 echo "Done"
+
+# NVIDIA environment variable
+write_nvidia_config_files() {
+
+# Environment variables to force Nvidia GBM (Generic Buffer Management)
+# See https://linuxiac.com/nvidia-with-wayland-on-arch-setup-guide/
+cat << EOF > /mnt/etc/environment
+GBM_BACKEND=nvidia-drm
+__GLX_VENDOR_LIBRARY_NAME=nvidia
+EOF
+
+# Nvidia drivers configuration (not needed because Arch configures this by default
+#cat << EOF > /mnt/etc/modprobe.d/nvidia.conf
+#options nvidia NVreg_PreserveVideoMemoryAllocations=1 NVreg_TemporaryFilePath=/var/tmp
+#EOF
+}
+
+# pacman hook to run mkinitcpio when NVIDIA drivers are updated
+# This is only required when not using the dkms driver version
+write_nvidia_pacman_hook() {
+cat << EOF > /mnt/etc/pacman.d/hooks/nvidia.hook
+[Trigger]
+Operation=Install
+Operation=Upgrade
+Operation=Remove
+Type=Package
+Target=nvidia-open
+Target=linux
+
+[Action]
+Description=Updating NVIDIA module in initcpio
+Depends=mkinitcpio
+When=PostTransaction
+NeedsTargets
+Exec=/bin/sh -c 'while read -r trg; do case $trg in linux*) exit 0; esac; done; /usr/bin/mkinitcpio -P'
+EOF
+}
+
+if [[ $gpu == "nvidia" ]]; then
+    echo "Optimizing initramfs and environment variables for NVIDIA"
+    sed -Ei 's/^MODULES=\(\)/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g' /mnt/etc/mkinitcpio.conf
+    sed -Ei 's/^(HOOKS.*) kms (.*)$/\1 \2/g' /mnt/etc/mkinitcpio.conf
+    write_nvidia_config_files
+    # If using dmks driver version, the following is not needed
+    #write_nvidia_pacman_hook
+    echo "Done"
+fi
 
 echo "Configuring smartctl..."
 echo "$disk -a -o on -S on -s (S/../.././02|L/../../6/03)" > /mnt/etc/smartd.conf

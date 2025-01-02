@@ -1,0 +1,20 @@
+# Instruction for installing ssh server on windows (using castor as example)
+# Enable sshfs server on castor. Procedure below is from this link:
+# https://medium.com/rkttu/set-up-your-ssh-server-in-windows-10-native-way-1aab9021c3a6
+scp /home/narcizo/.ssh/id_rsa.pub narci@castor:/C:/Users/narci/.ssh
+# In castor, edit file C:\ProgramData\ssh\sshd_config and comment the last two lines (the
+# ones starting with "Match Group" and "AuthorizedKeysFile")
+# Open powershell with admin elevation and execute the following commands:
+cd C:\Users\narci\.ssh
+rename id_rsa.pub authorized_keys
+$authorizedKeyFilePath = "C:\Users\narci\.ssh\authorized_keys"
+icacls.exe $authorizedKeyFilePath /inheritance:r
+Get-Acl “$env:ProgramData\ssh\ssh_host_dsa_key” | Set-Acl $authorizedKeyFilePath
+New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -PropertyType String -Force
+
+# The install scripts already creates an automount for castor on /mnt/castor but, if needed,
+# the following can be used:
+mkdir /home/narcizo/castor
+REMOTE="narci@192.168.1.42:/G:/Users/Narcizo/"
+LOCAL="/home/narcizo/castor"
+sshfs $REMOTE $LOCAL -o uid=1000,gid=1000,reconnect,ServerAliveInterval=15,ServerAliveCountMax=3

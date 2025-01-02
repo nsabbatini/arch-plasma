@@ -80,9 +80,6 @@ wireplumber
 
 # Graphics
 mesa
-intel-media-driver
-intel-gpu-tools
-vulkan-intel
 vulkan-tools
 
 # KDE Plasma desktop
